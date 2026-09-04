@@ -18,6 +18,11 @@ import java.awt.RenderingHints;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,11 +40,48 @@ public final class ILoveIndiaApp {
     }
 
     public static void main(String[] args) {
+        if (args.length > 0 && "--web".equals(args[0])) {
+            startWebServer();
+            return;
+        }
         if (GraphicsEnvironment.isHeadless()) {
             printHeadlessOutput();
             return;
         }
         SwingUtilities.invokeLater(ILoveIndiaApp::showWindow);
+    }
+
+    private static void startWebServer() {
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server.createContext("/", ILoveIndiaApp::handleWebRequest);
+            server.setExecutor(null);
+            server.start();
+            System.out.println("I Love India is running at http://localhost:8080");
+            System.out.println("Press Ctrl+C to stop the server.");
+        } catch (IOException exception) {
+            System.err.println("Could not start the web server: " + exception.getMessage());
+        }
+    }
+
+    private static void handleWebRequest(HttpExchange exchange) throws IOException {
+        String response = "<!doctype html><html><head><meta charset=\"UTF-8\"><title>I Love India</title>"
+                + "<style>body{margin:0;background:#f8f7f2;color:#000080;font-family:Georgia,serif;text-align:center}"
+                + ".flag{width:90%;max-width:720px;height:360px;margin:48px auto 34px;box-shadow:0 12px 30px #999}"
+                + ".saffron,.white,.green{height:33.33%}.saffron{background:#ff9933}.white{background:#fff;display:flex;align-items:center;justify-content:center}"
+                + ".green{background:#138808}.chakra{width:115px;height:115px;border:5px solid #000080;border-radius:50%}"
+                + ".chakra:after{content:'✦';font-size:72px;line-height:105px}.tag{color:#555;font:20px Arial,sans-serif}"
+                + "button{margin:24px;padding:14px 25px;background:#ff9933;border:0;color:white;font-weight:bold;font-size:16px;border-radius:4px}</style>"
+                + "</head><body><div class=\"flag\"><div class=\"saffron\"></div><div class=\"white\"><div class=\"chakra\"></div></div><div class=\"green\"></div></div>"
+                + "<h1>I LOVE INDIA</h1><p class=\"tag\">A celebration of our beautiful nation</p>"
+                + "<p>Unity in diversity is India's greatest strength.</p><button onclick=\"alert('Proud to be Indian!')\">Celebrate India</button>"
+                + "<h3 style=\"background:#138808;color:white;padding:16px\">Proud to be Indian</h3></body></html>";
+        byte[] bytes = response.getBytes("UTF-8");
+        exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+        exchange.sendResponseHeaders(200, bytes.length);
+        try (OutputStream output = exchange.getResponseBody()) {
+            output.write(bytes);
+        }
     }
 
     private static void printHeadlessOutput() {
