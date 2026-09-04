@@ -17,6 +17,7 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,18 @@ public final class ILoveIndiaApp {
     }
 
     public static void main(String[] args) {
+        if (GraphicsEnvironment.isHeadless()) {
+            printHeadlessOutput();
+            return;
+        }
         SwingUtilities.invokeLater(ILoveIndiaApp::showWindow);
+    }
+
+    private static void printHeadlessOutput() {
+        System.out.println("I LOVE INDIA");
+        System.out.println("A celebration of our beautiful nation");
+        System.out.println(QUOTES.get(0));
+        System.out.println("Proud to be Indian");
     }
 
     private static void showWindow() {

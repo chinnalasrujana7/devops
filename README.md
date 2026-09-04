@@ -20,4 +20,4 @@ javac -d out src\main\java\com\india\love\ILoveIndiaApp.java
 java -cp out com.india.love.ILoveIndiaApp
 ```
 
-Click **Celebrate India** to rotate through the messages.# devops
+On a computer with a graphical desktop, a window opens and **Celebrate India** rotates through the messages. In a headless terminal such as Killercoda, the command prints the application text instead.
