@@ -21,3 +21,13 @@ java -cp out com.india.love.ILoveIndiaApp
 ```
 
 On a computer with a graphical desktop, a window opens and **Celebrate India** rotates through the messages. In a headless terminal such as Killercoda, the command prints the application text instead.
+
+## Browser mode
+
+Start the Java web server with:
+
+```text
+mvn clean compile exec:java -Dexec.args=--web
+```
+
+Open `http://localhost:8080` in a browser. In Killercoda, open or preview port `8080` to view the page.
